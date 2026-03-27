@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Loader from "../components/Loader";
+import Loader from "../components/layout/Loader";
 
 export default function Login({ setToken, setRole }) {
   const [email, setEmail] = useState("");
