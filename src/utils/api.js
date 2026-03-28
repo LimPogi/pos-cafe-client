@@ -1,14 +1,14 @@
+const API = import.meta.env.VITE_API_URL || "https://pos-cafe-server.onrender.com";
+
 export const apiFetch = async (url, options = {}) => {
   const token = localStorage.getItem("token");
-
-  const API = import.meta.env.VITE_API_URL;
 
   const res = await fetch(`${API}${url}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 
@@ -18,7 +18,7 @@ export const apiFetch = async (url, options = {}) => {
     localStorage.removeItem("role");
 
     alert("Session expired. Please login again.");
-    window.location.reload();
+    window.location.href = "/login";
   }
 
   return res;

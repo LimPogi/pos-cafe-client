@@ -2,55 +2,56 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/layout/Loader";
 
-export default function Login({ setToken, setRole }) {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate(); // ✅ add this
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-  try {
-    console.log("🚀 Sending login request...");
-    setLoading(true);
+    try {
+      console.log("🚀 Sending login request...");
+      setLoading(true);
 
-    const res = await fetch("https://pos-cafe-server.onrender.com/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+      const res = await fetch("https://pos-cafe-server.onrender.com/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    console.log("STATUS:", res.status);
+      console.log("STATUS:", res.status);
 
-    const text = await res.text(); // 👈 safer first
-    console.log("RAW RESPONSE:", text);
+      const text = await res.text();
+      console.log("RAW RESPONSE:", text);
 
-    const data = JSON.parse(text); // 👈 then parse
+      const data = JSON.parse(text);
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
+      if (data.token) {
+        // ✅ SAVE SESSION
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
 
-      setToken(data.token);
-      setRole(data.role);
+        // ❌ REMOVE setToken/setRole (THIS FIXES YOUR ERROR)
 
-      if (data.role === "admin") {
-        navigate("/dashboard");
+        // ✅ REDIRECT BASED ON ROLE
+        if (data.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/cashier");
+        }
+
       } else {
-        navigate("/cashier");
+        alert(data.message || "Login failed");
       }
 
-    } else {
-      alert(data.message || "Login failed");
+    } catch (err) {
+      console.error("FRONTEND ERROR:", err);
+      alert("Server error");
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err) {
-    console.error("FRONTEND ERROR:", err);
-    alert("Server error");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (loading) {
     return <Loader />;
@@ -86,4 +87,3 @@ export default function Login({ setToken, setRole }) {
     </div>
   );
 }
-
