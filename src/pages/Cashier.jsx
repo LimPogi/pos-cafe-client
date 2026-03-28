@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "../styles/Cashier.css";
 
 export default function Cashier() {
   const API = import.meta.env.VITE_API_URL;
