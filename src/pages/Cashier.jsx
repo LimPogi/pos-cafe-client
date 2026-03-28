@@ -12,7 +12,7 @@ function Cashier() {
     try {
       setLoading(true);
 
-      const res = await apiFetch("https://pos-cafe-server.onrender.com/api");
+      const res = await apiFetch("https://pos-cafe-server.onrender.com/api/products");
       const data = await res.json();
 
       setProducts(Array.isArray(data) ? data : []);

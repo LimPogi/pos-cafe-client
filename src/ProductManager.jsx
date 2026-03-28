@@ -14,7 +14,7 @@ function ProductManager() {
   // 🔄 FETCH PRODUCTS
   const fetchProducts = async () => {
     try {
-      const res = await apiFetch("https://pos-cafe-server.onrender.com/api");
+      const res = await apiFetch("https://pos-cafe-server.onrender.com/api/products");
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -30,8 +30,8 @@ function ProductManager() {
   const handleSubmit = async () => {
     try {
       const url = editingId
-        ? `https://pos-cafe-server.onrender.com/api/${editingId}`
-        : "https://pos-cafe-server.onrender.com/api";
+        ? `https://pos-cafe-server.onrender.com/api/products${editingId}`
+        : "https://pos-cafe-server.onrender.com/api/products";
 
       const method = editingId ? "PUT" : "POST";
 
@@ -67,7 +67,7 @@ function ProductManager() {
   const handleDelete = async (id) => {
     try {
       const res = await apiFetch(
-        `https://pos-cafe-server.onrender.com/api/${id}`,
+        `https://pos-cafe-server.onrender.com/api/products${id}`,
         { method: "DELETE" }
       );
 
