@@ -38,12 +38,12 @@ function Dashboard() {
         ordersRes,
         dailyRes
       ] = await Promise.all([
-        apiFetch("http://localhost:5001/api/dashboard/total-sales"),
-        apiFetch("http://localhost:5001/api/dashboard/today-sales"),
-        apiFetch("http://localhost:5001/api/dashboard/week-sales"),
-        apiFetch("http://localhost:5001/api/dashboard/month-sales"),
-        apiFetch("http://localhost:5001/api/dashboard/orders"),
-        apiFetch("http://localhost:5001/api/dashboard/daily-sales"),
+        apiFetch("https://pos-cafe-server.onrender.com/api/dashboard/total-sales"),
+        apiFetch("https://pos-cafe-server.onrender.com/api/dashboard/today-sales"),
+        apiFetch("https://pos-cafe-server.onrender.com/api/dashboard/week-sales"),
+        apiFetch("https://pos-cafe-server.onrender.com/api/dashboard/month-sales"),
+        apiFetch("https://pos-cafe-server.onrender.com/dashboard/orders"),
+        apiFetch("https://pos-cafe-server.onrender.com/api/dashboard/daily-sales"),
       ]);
 
       const totalData = await totalRes.json();

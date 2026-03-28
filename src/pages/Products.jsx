@@ -7,7 +7,7 @@ function Products() {
   const [price, setPrice] = useState("");
 
   const fetchProducts = async () => {
-    const res = await apiFetch("http://localhost:5001/api/products");
+    const res = await apiFetch("https://pos-cafe-server.onrender.com/api/products");
     const data = await res.json();
     setProducts(data);
   };
@@ -17,7 +17,7 @@ function Products() {
   }, []);
 
   const addProduct = async () => {
-    await fetch("http://localhost:5001/api/products", {
+    await fetch("https://pos-cafe-server.onrender.com/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, price }),
@@ -29,7 +29,7 @@ function Products() {
   };
 
   const deleteProduct = async (id) => {
-    await fetch(`http://localhost:5001/api/products/${id}`, {
+    await fetch(`https://pos-cafe-server.onrender.com/api/products/${id}`, {
       method: "DELETE",
     });
 

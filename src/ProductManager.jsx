@@ -14,7 +14,7 @@ function ProductManager() {
   // 🔄 FETCH PRODUCTS
   const fetchProducts = async () => {
     try {
-      const res = await apiFetch("http://localhost:5001/api/products");
+      const res = await apiFetch("https://pos-cafe-server.onrender.com/api");
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -30,8 +30,8 @@ function ProductManager() {
   const handleSubmit = async () => {
     try {
       const url = editingId
-        ? `http://localhost:5001/api/products/${editingId}`
-        : "http://localhost:5001/api/products";
+        ? `https://pos-cafe-server.onrender.com/api/${editingId}`
+        : "https://pos-cafe-server.onrender.com/api";
 
       const method = editingId ? "PUT" : "POST";
 
@@ -67,7 +67,7 @@ function ProductManager() {
   const handleDelete = async (id) => {
     try {
       const res = await apiFetch(
-        `http://localhost:5001/api/products/${id}`,
+        `https://pos-cafe-server.onrender.com/api/${id}`,
         { method: "DELETE" }
       );
 

@@ -12,7 +12,7 @@ function Cashier() {
     try {
       setLoading(true);
 
-      const res = await apiFetch("http://localhost:5001/api/products");
+      const res = await apiFetch("https://pos-cafe-server.onrender.com/api");
       const data = await res.json();
 
       setProducts(Array.isArray(data) ? data : []);
@@ -79,7 +79,7 @@ function Cashier() {
     };
 
     try {
-      const res = await fetch("http://localhost:5001/api/orders", {
+      const res = await fetch("https://pos-cafe-server.onrender.com/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Loader from "../components/layout/Loader";
 
 export default function Login({ setToken, setRole }) {
@@ -6,34 +7,50 @@ export default function Login({ setToken, setRole }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate(); // ✅ add this
+
   const handleLogin = async () => {
-    try {
-      setLoading(true);
+  try {
+    console.log("🚀 Sending login request...");
+    setLoading(true);
 
-      const res = await fetch("http://localhost:5001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const res = await fetch("https://pos-cafe-server.onrender.com/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    console.log("STATUS:", res.status);
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
+    const text = await res.text(); // 👈 safer first
+    console.log("RAW RESPONSE:", text);
 
-        setToken(data.token);
-        setRole(data.role);
+    const data = JSON.parse(text); // 👈 then parse
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
+      setToken(data.token);
+      setRole(data.role);
+
+      if (data.role === "admin") {
+        navigate("/dashboard");
       } else {
-        alert(data.message || "Login failed");
+        navigate("/cashier");
       }
 
-    } catch (err) {
-      alert("Server error");
-    } finally {
-      setLoading(false);
+    } else {
+      alert(data.message || "Login failed");
     }
-  };
+
+  } catch (err) {
+    console.error("FRONTEND ERROR:", err);
+    alert("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return <Loader />;
@@ -69,3 +86,4 @@ export default function Login({ setToken, setRole }) {
     </div>
   );
 }
+

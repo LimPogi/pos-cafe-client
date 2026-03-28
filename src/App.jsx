@@ -5,10 +5,12 @@ import Cashier from "./pages/Cashier";
 import Products from "./pages/Products";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        <Route path="/" element={<Login />} />
 
         <Route path="/login" element={<Login />} />
 
@@ -43,3 +45,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+export default App;

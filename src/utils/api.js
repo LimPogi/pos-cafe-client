@@ -1,7 +1,9 @@
 export const apiFetch = async (url, options = {}) => {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(url, {
+  const API = import.meta.env.VITE_API_URL;
+
+  const res = await fetch(`${API}${url}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -16,7 +18,7 @@ export const apiFetch = async (url, options = {}) => {
     localStorage.removeItem("role");
 
     alert("Session expired. Please login again.");
-    window.location.reload(); // simple reset
+    window.location.reload();
   }
 
   return res;
