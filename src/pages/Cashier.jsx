@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../utils/api";
+import axios from "axios";
 
-function Cashier() {
+export default function Cashier() {
+  const API = import.meta.env.VITE_API_URL;
+
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [payment, setPayment] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // 📦 FETCH PRODUCTS
   const fetchProducts = async () => {
     try {
       setLoading(true);
-
-      const res = await apiFetch("https://pos-cafe-server.onrender.com/api/products");
-      const data = await res.json();
-
-      setProducts(Array.isArray(data) ? data : []);
+      const res = await axios.get(`${API}/api/products`);
+      setProducts(res.data || []);
     } catch (err) {
       console.error("Error fetching products:", err);
     } finally {
@@ -29,9 +28,9 @@ function Cashier() {
 
   // ➕ ADD TO CART
   const addToCart = (product) => {
-    const existing = cart.find((item) => item.id === product.id);
+    const exists = cart.find((item) => item.id === product.id);
 
-    if (existing) {
+    if (exists) {
       setCart(
         cart.map((item) =>
           item.id === product.id
@@ -44,29 +43,25 @@ function Cashier() {
     }
   };
 
-  // ❌ REMOVE ITEM
+  // ➖ REMOVE ITEM
   const removeItem = (id) => {
     setCart(cart.filter((item) => item.id !== id));
   };
 
-  // 💰 CALCULATIONS
+  // 💰 COMPUTATIONS
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
   );
 
-  const discount = subtotal > 1000 ? subtotal * 0.1 : 0; // 10% discount rule
-  const taxableAmount = subtotal - discount;
-  const tax = taxableAmount * 0.12; // 12% VAT
-
-  const total = taxableAmount + tax;
+  const discount = 0; // you can upgrade later
+  const tax = subtotal * 0.12;
+  const total = subtotal - discount + tax;
 
   // 💳 CHECKOUT
   const checkout = async () => {
-    if (!cart.length) return alert("Cart is empty");
-    if (!payment) return alert("Enter payment");
+    if (cart.length === 0) return alert("Cart is empty");
 
-    // 🧾 ORDER DATA (FINAL STRUCTURE)
     const orderData = {
       items: cart,
       subtotal,
@@ -75,21 +70,13 @@ function Cashier() {
       total,
       payment: Number(payment),
       change: Number(payment) - total,
-      date: new Date().toISOString()
     };
 
     try {
-      const res = await fetch("https://pos-cafe-server.onrender.com/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
+      const res = await axios.post(`${API}/api/orders`, orderData);
 
-      const data = await res.json();
-
-      if (data.success || data.id) {
+      if (res.data?.success || res.data?.id) {
         alert("Order completed!");
-
         setCart([]);
         setPayment("");
       } else {
@@ -113,18 +100,16 @@ function Cashier() {
         <h2 className="text-2xl font-bold mb-4">🧃 Products</h2>
 
         <div className="grid grid-cols-3 gap-4">
-
           {products.map((p) => (
             <div
               key={p.id}
-              className="card p-4 cursor-pointer bg-white rounded-xl shadow hover:shadow-lg transition"
+              className="p-4 bg-white rounded-xl shadow cursor-pointer hover:shadow-lg"
               onClick={() => addToCart(p)}
             >
               <h3 className="font-bold">{p.name}</h3>
               <p className="text-green-600">₱{p.price}</p>
             </div>
           ))}
-
         </div>
       </div>
 
@@ -134,11 +119,10 @@ function Cashier() {
         <h2 className="text-xl font-bold mb-4">🛒 Cart</h2>
 
         <div className="flex-1 overflow-auto">
-
-          {cart.map((item, index) => (
+          {cart.map((item) => (
             <div
-              key={index}
-              className="flex justify-between mb-2 border-b pb-2"
+              key={item.id}
+              className="flex justify-between border-b py-2"
             >
               <div>
                 <p className="font-semibold">{item.name}</p>
@@ -155,23 +139,14 @@ function Cashier() {
               </button>
             </div>
           ))}
-
         </div>
 
-        {/* 💰 TOTAL + PAYMENT */}
+        {/* 💰 SUMMARY */}
         <div className="border-t pt-3">
 
-          <h3 className="text-lg font-bold">
-            Subtotal: ₱{subtotal}
-          </h3>
-
-          <h3 className="text-sm">
-            Discount: ₱{discount}
-          </h3>
-
-          <h3 className="text-sm">
-            Tax (12%): ₱{tax.toFixed(2)}
-          </h3>
+          <h3 className="font-bold">Subtotal: ₱{subtotal.toFixed(2)}</h3>
+          <h3 className="text-sm">Discount: ₱{discount.toFixed(2)}</h3>
+          <h3 className="text-sm">Tax: ₱{tax.toFixed(2)}</h3>
 
           <h3 className="text-lg font-bold mt-2">
             Total: ₱{total.toFixed(2)}
@@ -186,7 +161,10 @@ function Cashier() {
           />
 
           <p className="mt-1">
-            Change: ₱{payment ? (Number(payment) - total).toFixed(2) : 0}
+            Change: ₱
+            {payment
+              ? (Number(payment) - total).toFixed(2)
+              : "0.00"}
           </p>
 
           <button
@@ -195,13 +173,9 @@ function Cashier() {
           >
             Checkout
           </button>
-
         </div>
 
       </div>
-
     </div>
   );
 }
-
-export default Cashier;
