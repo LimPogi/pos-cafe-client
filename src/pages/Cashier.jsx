@@ -45,9 +45,16 @@ export default function Cashier() {
   };
 
   // ➖ REMOVE ITEM
-  const removeItem = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
-  };
+ const decreaseQty = (id) => {
+  setCart(
+    cart.map((item) =>
+      item.id === id
+        ? { ...item, qty: item.qty - 1 }
+        : item
+    ).filter((item) => item.qty > 0)
+  );
+};
+
 
   // 💰 COMPUTATIONS
   const subtotal = cart.reduce(
@@ -60,6 +67,7 @@ export default function Cashier() {
   const total = subtotal - discount + tax;
 
   // 💳 CHECKOUT
+  
   const checkout = async () => {
     if (cart.length === 0) return alert("Cart is empty");
 
