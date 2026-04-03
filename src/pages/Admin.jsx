@@ -244,4 +244,18 @@ function Card({ title, value, color }) {
   );
 }
 
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) {
+    navigate("/login");
+  }
+
+  if (user.role !== "admin") {
+    navigate("/cashier");
+  }
+}, []);
+
 export default Dashboard;
+
+

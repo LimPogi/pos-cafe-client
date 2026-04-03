@@ -10,48 +10,48 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try {
-      console.log("🚀 Sending login request...");
-      setLoading(true);
+  try {
+    console.log("🚀 Sending login request...");
+    setLoading(true);
 
-      const res = await fetch("https://pos-cafe-server.onrender.com/api/auth/login", {
+    const res = await fetch(
+      "https://pos-cafe-server.onrender.com/api/auth/login",
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      });
+      }
+    );
 
-      console.log("STATUS:", res.status);
+    console.log("STATUS:", res.status);
 
-      const text = await res.text();
-      console.log("RAW RESPONSE:", text);
+    const data = await res.json();
 
-      const data = JSON.parse(text);
+    console.log("RESPONSE:", data);
 
-      if (data.token) {
-        // ✅ SAVE SESSION
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
+    if (data.token && data.user) {
+      // ✅ SAVE SESSION
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-        // ❌ REMOVE setToken/setRole (THIS FIXES YOUR ERROR)
-
-        // ✅ REDIRECT BASED ON ROLE
-        if (data.role === "admin") {
-          navigate("/dashboard");
-        } else {
-          navigate("/cashier");
-        }
-
+      // 🔥 ROLE ROUTING (UPDATED)
+      if (data.user.role === "admin") {
+        navigate("/admin");
       } else {
-        alert(data.message || "Login failed");
+        navigate("/cashier");
       }
 
-    } catch (err) {
-      console.error("FRONTEND ERROR:", err);
-      alert("Server error");
-    } finally {
-      setLoading(false);
+    } else {
+      alert(data.message || "Login failed");
     }
-  };
+
+  } catch (err) {
+    console.error("FRONTEND ERROR:", err);
+    alert("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return <Loader />;

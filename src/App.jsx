@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 import Cashier from "./pages/Cashier";
 import Products from "./pages/Products";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -10,19 +11,23 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Login />} />
+        {/* 🔐 DEFAULT ROUTE */}
+        <Route path="/" element={<Navigate to="/login" />} />
 
+        {/* 🔐 LOGIN */}
         <Route path="/login" element={<Login />} />
 
+        {/* 🧑‍💼 ADMIN ROUTE */}
         <Route
-          path="/dashboard"
+          path="/admin"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <Dashboard />
+              <Admin />
             </ProtectedRoute>
           }
         />
 
+        {/* 🧾 CASHIER ROUTE */}
         <Route
           path="/cashier"
           element={
@@ -32,6 +37,7 @@ function App() {
           }
         />
 
+        {/* 📦 PRODUCTS (ADMIN ONLY) */}
         <Route
           path="/products"
           element={

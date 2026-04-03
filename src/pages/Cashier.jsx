@@ -178,3 +178,15 @@ export default function Cashier() {
     </div>
   );
 }
+
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user) {
+    navigate("/login");
+  }
+
+  if (user.role !== "cashier") {
+    navigate("/admin");
+  }
+}, []);
