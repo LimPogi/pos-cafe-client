@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
+import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import {
   LineChart,
@@ -24,6 +27,32 @@ function Dashboard() {
   const [orders, setOrders] = useState([]);
   const [dailySales, setDailySales] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const Dashboard = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axios.get(`${API}/sales/analytics`);
+      setData(res.data.daily);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <h2>📊 Sales Dashboard</h2>
+
+      <LineChart width={600} height={300} data={data}>
+        <XAxis dataKey="date" />
+        <YAxis />
+        <Tooltip />
+        <Line type="monotone" dataKey="total" />
+      </LineChart>
+    </div>
+  );
+};
 
   // 🔄 FETCH DATA (OPTIMIZED)
   const fetchData = async () => {
@@ -69,6 +98,14 @@ function Dashboard() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+  const fetchSales = async () => {
+    const res = await axios.get(`${API}/sales/summary`);
+    setSales(res.data);
+  };
+
+  fetchSales();
+  }, []);
 
   useEffect(() => {
     fetchData();

@@ -72,3 +72,10 @@
   cursor: pointer;
   font-size: 18px;
 }
+.checkout-btn {
+  background: #6F4E37;
+  color: white;
+  font-size: 18px;
+  padding: 12px;
+  border-radius: 10px;
+}
