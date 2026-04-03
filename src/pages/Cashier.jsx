@@ -9,6 +9,7 @@ export default function Cashier() {
   const [cart, setCart] = useState([]);
   const [payment, setPayment] = useState("");
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all"); // ✅ FIX
 
   // 📦 FETCH PRODUCTS
   const fetchProducts = async () => {
@@ -44,17 +45,24 @@ export default function Cashier() {
     }
   };
 
-  // ➖ REMOVE ITEM
- const decreaseQty = (id) => {
-  setCart(
-    cart.map((item) =>
-      item.id === id
-        ? { ...item, qty: item.qty - 1 }
-        : item
-    ).filter((item) => item.qty > 0)
-  );
-};
+  // ➖ DECREASE QTY
+  const decreaseQty = (id) => {
+    setCart(
+      cart
+        .map((item) =>
+          item.id === id
+            ? { ...item, qty: item.qty - 1 }
+            : item
+        )
+        .filter((item) => item.qty > 0)
+    );
+  };
 
+  // 🎯 FILTER PRODUCTS
+  const filteredProducts =
+    filter === "all"
+      ? products
+      : products.filter((p) => p.category === filter);
 
   // 💰 COMPUTATIONS
   const subtotal = cart.reduce(
@@ -62,12 +70,11 @@ export default function Cashier() {
     0
   );
 
-  const discount = 0; // you can upgrade later
+  const discount = 0;
   const tax = subtotal * 0.12;
   const total = subtotal - discount + tax;
 
   // 💳 CHECKOUT
-  
   const checkout = async () => {
     if (cart.length === 0) return alert("Cart is empty");
 
@@ -98,93 +105,76 @@ export default function Cashier() {
   };
 
   if (loading) {
-    return <div className="p-6">Loading products...</div>;
+    return <div>Loading products...</div>;
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="container">
 
-      {/* 🧃 PRODUCTS */}
-      <div className="w-2/3 p-4 overflow-auto">
-        <h2 className="text-2xl font-bold mb-4">🧃 Products</h2>
-
-        <div className="grid grid-cols-3 gap-4">
-          {products.map((p) => (
-            <div
-              key={p.id}
-              className="p-4 bg-white rounded-xl shadow cursor-pointer hover:shadow-lg"
-              onClick={() => addToCart(p)}
-            >
-              <h3 className="font-bold">{p.name}</h3>
-              <p className="text-green-600">₱{p.price}</p>
-            </div>
-          ))}
-        </div>
+      {/* LEFT: CATEGORY */}
+      <div className="categories">
+        <h3>Menu</h3>
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("drinks")}>☕ Drinks</button>
+        <button onClick={() => setFilter("pastries")}>🥐 Pastries</button>
+        <button onClick={() => setFilter("pasta")}>🍝 Pasta</button>
       </div>
 
-      {/* 🛒 CART */}
-      <div className="w-1/3 bg-white p-4 shadow-lg flex flex-col">
+      {/* CENTER: PRODUCTS */}
+      <div className="products">
+        {filteredProducts.map((p) => (
+          <div
+            key={p.id}
+            className="card"
+            onClick={() => addToCart(p)}
+          >
+            <h4>{p.name}</h4>
+            <p>₱{p.price}</p>
+          </div>
+        ))}
+      </div>
 
-        <h2 className="text-xl font-bold mb-4">🛒 Cart</h2>
+      {/* RIGHT: CART */}
+      <div className="cart">
+        <h3>Order</h3>
 
-        <div className="flex-1 overflow-auto">
-          {cart.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between border-b py-2"
-            >
-              <div>
-                <p className="font-semibold">{item.name}</p>
-                <p className="text-sm text-gray-500">
-                  ₱{item.price} x {item.qty}
-                </p>
-              </div>
+        {cart.map((item) => (
+          <div key={item.id} className="cart-item">
+            <span>{item.name} x{item.qty}</span>
 
-              <button
-                onClick={() => removeItem(item.id)}
-                className="text-red-500"
-              >
-                ❌
-              </button>
+            <div>
+              <button onClick={() => decreaseQty(item.id)}>-</button>
+              <button onClick={() => addToCart(item)}>+</button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
 
         {/* 💰 SUMMARY */}
-        <div className="border-t pt-3">
-
-          <h3 className="font-bold">Subtotal: ₱{subtotal.toFixed(2)}</h3>
-          <h3 className="text-sm">Discount: ₱{discount.toFixed(2)}</h3>
-          <h3 className="text-sm">Tax: ₱{tax.toFixed(2)}</h3>
-
-          <h3 className="text-lg font-bold mt-2">
-            Total: ₱{total.toFixed(2)}
-          </h3>
+        <div className="summary">
+          <h4>Subtotal: ₱{subtotal.toFixed(2)}</h4>
+          <h4>Tax: ₱{tax.toFixed(2)}</h4>
+          <h2>Total: ₱{total.toFixed(2)}</h2>
 
           <input
             type="number"
             placeholder="Payment"
-            className="w-full border p-2 rounded mt-2"
             value={payment}
             onChange={(e) => setPayment(e.target.value)}
           />
 
-          <p className="mt-1">
+          <p>
             Change: ₱
             {payment
               ? (Number(payment) - total).toFixed(2)
               : "0.00"}
           </p>
 
-          <button
-            onClick={checkout}
-            className="w-full bg-green-600 text-white p-2 rounded mt-3"
-          >
+          <button className="checkout" onClick={checkout}>
             Checkout
           </button>
         </div>
-
       </div>
+
     </div>
   );
 }

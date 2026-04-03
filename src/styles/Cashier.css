@@ -1,18 +1,74 @@
 .container {
   display: flex;
+  height: 100vh;
+  background: #f7f3ee;
 }
 
-.products {
-  flex: 2;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* LEFT MENU */
+.categories {
+  width: 15%;
+  padding: 10px;
+  background: #6f4e37;
+  color: white;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
-.cart {
-  flex: 1;
-  border-left: 1px solid #ccc;
+.categories button {
   padding: 10px;
-  position: sticky;
-  top: 0;
+  border: none;
+  background: white;
+  color: #6f4e37;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* PRODUCTS GRID */
+.products {
+  width: 55%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* CART */
+.cart {
+  width: 30%;
+  background: white;
+  padding: 15px;
+  border-left: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.checkout {
+  background: #6f4e37;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
 }
